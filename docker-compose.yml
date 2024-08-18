@@ -1,28 +1,31 @@
-version: "3.6"
+version: '3.7'
+
 services:
   db:
     image: mysql:8.0
     container_name: DB
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_unicode_ci
     environment:
-      - MYSQL_DATABASE=web
-      - MYSQL_USER=melp
-      - MYSQL_PASSWORD=1234 # this should live in a env var
-      - MYSQL_ALLOW_EMPTY_PASSWORD=1 # equivalent to True
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=${MYSQL_ALLOW_EMPTY_PASSWORD}
     volumes:
-      - "./DB:/docker-entrypoint-initdb.d" # this is how we persist a sql db even when container stops
+      - "./DB:/docker-entrypoint-initdb.d"
+
   web:
     container_name: WEB
     build:
       context: src
       dockerfile: Dockerfile
     volumes:
-      - "./src/WEB:/var/www/html" # sync the current dir on local machine to the dir of container
+      - "./src/WEB:/var/www/html"
     ports:
       - 80:80
     extra_hosts:
-      - "kibana.local:192.168.56.101"
-      - "elasticsearch.local:192.168.56.101"
+      - "kibana.local:192.168.1.18"
+      - "elasticsearch.local:192.168.1.18"
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:4.8.1
     container_name: PHPMYADMIN_Web
@@ -31,3 +34,69 @@ services:
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
+
+  elasticsearch:
+    build:
+      context: elasticsearch/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - elasticsearch:/usr/share/elasticsearch/data:Z
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - node.name=elasticsearch
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - discovery.type=single-node
+    networks:
+      - myweb_elk
+    restart: unless-stopped
+
+  logstash:
+    build:
+      context: logstash/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+    ports:
+      - 5044:5044
+      - 50000:50000/tcp
+      - 50000:50000/udp
+      - 9600:9600
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+      - LOGSTASH_INTERNAL_PASSWORD=${LOGSTASH_INTERNAL_PASSWORD}
+    networks:
+      - myweb_elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  kibana:
+    build:
+      context: kibana/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+    ports:
+      - 5601:5601
+    environment:
+      - KIBANA_SYSTEM_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
+    networks:
+      - myweb_elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+networks:
+  myweb_elk:
+    driver: bridge
+
+volumes:
+  elasticsearch:
