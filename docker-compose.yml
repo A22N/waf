@@ -1,3 +1,4 @@
+version: '3.7'
 
 services:
   db:
@@ -8,13 +9,9 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ALLOW_EMPTY_PASSWORD=${MYSQL_ALLOW_EMPTY_PASSWORD}
     volumes:
       - "./DB:/docker-entrypoint-initdb.d"
-    networks:
-      - myweb_elk
-    restart: unless-stopped
 
   web:
     container_name: WEB
@@ -26,8 +23,8 @@ services:
     ports:
       - 80:80
     extra_hosts:
-      - "kibana.local:192.168.1.21"
-      - "elasticsearch.local:192.168.1.21"
+      - "kibana.local:192.168.1.18"
+      - "elasticsearch.local:192.168.1.18"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:4.8.1
