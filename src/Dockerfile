@@ -5,35 +5,29 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Ho_Chi_Minh
 
-# Install Apache, PHP, MySQLi, Filebeat, Packetbeat and other dependencies
+# Install Apache, PHP, MySQLi, and other dependencies
 RUN apt-get update && \
     apt-get install -y apache2 php libapache2-mod-php php-mysql wget nano apt-transport-https gnupg2 curl git && \
-    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
     echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list && \
     apt-get update && \
-    apt-get install filebeat packetbeat libpcap0.8 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y libpcap0.8
+
+# Install Filebeat and Packetbeat
+RUN apt-get install -y filebeat packetbeat
 
 # Install ModSecurity
-RUN apt-get update && \
-    apt-get install -y libapache2-mod-security2
+RUN apt-get install -y libapache2-mod-security2
 
 # Install OWASP CRS
 RUN mkdir -p /usr/share/modsecurity-crs && \
+    git clone https://github.com/coreruleset/coreruleset.git /usr/share/modsecurity-crs && \
     cd /usr/share/modsecurity-crs && \
-    git clone https://github.com/coreruleset/coreruleset.git && \
-    cd coreruleset && \
     git checkout main && \
     cp -r * /usr/share/modsecurity-crs && \
-    cd .. && \
-    rm -rf coreruleset
+    rm -rf /usr/share/modsecurity-crs/coreruleset
 
-# After copying the configuration files
+# Remove unnecessary rules
 RUN rm -f /usr/share/modsecurity-crs/rules/REQUEST-934-APPLICATION-ATTACK-NODEJS.conf
-
-# Update Apache configuration to set ServerName
-# RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Set working directory
 WORKDIR /var/www/html/
@@ -47,7 +41,6 @@ RUN a2enmod security2
 COPY modsecurity.conf /etc/apache2/mods-enabled/security2.conf
 COPY crs-setup.conf /usr/share/modsecurity-crs/crs-setup.conf
 
-
 # Change permissions
 RUN chown -R www-data:www-data /var/www/html/images/
 RUN chmod -R 777 /var/www/html/images/
@@ -56,4 +49,4 @@ RUN chmod -R 777 /var/www/html/images/
 EXPOSE 80
 
 # Start Apache server
-CMD ["apache2ctl", "-D", "FOREGROUND"]
+ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
