@@ -33,7 +33,7 @@ RUN mkdir -p /usr/share/modsecurity-crs && \
 RUN rm -f /usr/share/modsecurity-crs/rules/REQUEST-934-APPLICATION-ATTACK-NODEJS.conf
 
 # Update Apache configuration to set ServerName
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+# RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Set working directory
 WORKDIR /var/www/html/
