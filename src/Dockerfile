@@ -45,6 +45,8 @@ RUN a2enmod security2
 
 # Copy ModSecurity configuration
 COPY modsecurity.conf /etc/apache2/mods-enabled/security2.conf
+COPY crs-setup.conf /usr/share/modsecurity-crs/crs-setup.conf
+
 
 # Change permissions
 RUN chown -R www-data:www-data /var/www/html/images/
