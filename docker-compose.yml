@@ -26,6 +26,7 @@ services:
       - MYSQL_DATABASE=PHP_Myblog
       - MYSQL_USER=db_user
       - MYSQL_PASSWORD=db_password
+
   phpmyadmin:
     container_name: phpmyadmin_MyBlog
     image: phpmyadmin/phpmyadmin:4.8.1
@@ -39,7 +40,8 @@ services:
     profiles:
       - setup
     build:
-      context: setup/
+      context: ./setup
+      dockerfile: Dockerfile
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     init: true
@@ -63,7 +65,8 @@ services:
 
   elasticsearch:
     build:
-      context: elasticsearch/
+      context: ./elasticsearch
+      dockerfile: Dockerfile
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
@@ -75,12 +78,7 @@ services:
     environment:
       node.name: elasticsearch
       ES_JAVA_OPTS: -Xms512m -Xmx512m
-      # Bootstrap password.
-      # Used to initialize the keystore during the initial startup of
-      # Elasticsearch. Ignored on subsequent runs.
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
-      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
     networks:
       - elk
@@ -88,7 +86,8 @@ services:
 
   logstash:
     build:
-      context: logstash/
+      context: ./logstash
+      dockerfile: Dockerfile
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
@@ -110,7 +109,8 @@ services:
 
   kibana:
     build:
-      context: kibana/
+      context: ./kibana
+      dockerfile: Dockerfile
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:

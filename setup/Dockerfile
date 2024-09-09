@@ -1,12 +1,23 @@
-ARG ELASTIC_VERSION
+# Sử dụng hình ảnh cơ sở từ Ubuntu
+FROM ubuntu:20.04
 
-# https://www.docker.elastic.co/
-FROM docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+# Cài đặt các công cụ cần thiết và Elasticsearch
+RUN apt-get update && \
+    apt-get install -y wget gnupg && \
+    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
+    echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-8.x.list && \
+    apt-get update && \
+    apt-get install -y elasticsearch && \
+    apt-get clean
 
-# Sao chép entrypoint.sh vào thư mục gốc của container
+# Sao chép entrypoint.sh vào container
 COPY entrypoint.sh /entrypoint.sh
 
 # Đảm bảo entrypoint.sh có quyền thực thi
 RUN chmod +x /entrypoint.sh
 
+# Đặt entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
+
+# Chạy Elasticsearch khi container khởi động
+CMD ["elasticsearch"]
