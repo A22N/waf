@@ -19,6 +19,9 @@
                   <a class="nav-link" href="./control.php?file=gallery.php">Gallery</a>
                </li>
                <li class="nav-item">
+                  <a class="nav-link" href="./control.php?file=logout.php">Logout</a>
+               </li>
+               <li class="nav-item">
                   <a class="nav-link" href="./control.php?file=uploadimg.php"><i class="fa fa-user-circle"
                         aria-hidden="true"></i></a>
                </li>
