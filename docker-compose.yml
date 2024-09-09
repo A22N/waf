@@ -1,39 +1,65 @@
-version: '3.6'
+version: '3.7'
 
 services:
   db:
-    image: mysql:8.0
-    container_name: DB
+    build: ./db
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ALLOW_EMPTY_PASSWORD=${MYSQL_ALLOW_EMPTY_PASSWORD}
-    volumes:
-      - "./DB:/docker-entrypoint-initdb.d"
+      - MYSQL_ROOT_PASSWORD=I@123456@admin
+      - MYSQL_DATABASE=PHP_Myblog
+      - MYSQL_USER=db_user
+      - MYSQL_PASSWORD=db_password
 
-  web:
-    container_name: WEB
-    build:
-      context: src
-      dockerfile: Dockerfile
-    volumes:
-      - "./src/WEB:/var/www/html"
+  php_myblog:
+    build: ./web
+    restart: unless-stopped
     ports:
-      - 80:80
-    extra_hosts:
-      - "kibana.local:192.168.1.21"
-      - "elasticsearch.local:192.168.1.21"
-
+      - "8000:80"
+    volumes:
+      - ./web/src:/var/www/html
+    environment:
+      - MYSQL_HOSTNAME=db
+      - MYSQL_ROOT_PASSWORD=I@123456@admin
+      - MYSQL_DATABASE=PHP_Myblog
+      - MYSQL_USER=db_user
+      - MYSQL_PASSWORD=db_password
   phpmyadmin:
+    container_name: phpmyadmin_MyBlog
     image: phpmyadmin/phpmyadmin:4.8.1
-    container_name: PHPMYADMIN_Web
     ports:
-      - 8001:80
+      - "8081:80"
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
+
+  setup:
+    profiles:
+      - setup
+    build:
+      context: setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    init: true
+    volumes:
+      - ./setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./setup/lib.sh:/lib.sh:ro,Z
+      - ./setup/roles:/roles:ro,Z
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
 
   elasticsearch:
     build:
@@ -47,12 +73,17 @@ services:
       - 9200:9200
       - 9300:9300
     environment:
-      - node.name=elasticsearch
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - discovery.type=single-node
+      node.name: elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      # Bootstrap password.
+      # Used to initialize the keystore during the initial startup of
+      # Elasticsearch. Ignored on subsequent runs.
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
     networks:
-      - myweb_elk
+      - elk
     restart: unless-stopped
 
   logstash:
@@ -69,10 +100,10 @@ services:
       - 50000:50000/udp
       - 9600:9600
     environment:
-      - LS_JAVA_OPTS=-Xms256m -Xmx256m
-      - LOGSTASH_INTERNAL_PASSWORD=${LOGSTASH_INTERNAL_PASSWORD}
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     networks:
-      - myweb_elk
+      - elk
     depends_on:
       - elasticsearch
     restart: unless-stopped
@@ -87,15 +118,15 @@ services:
     ports:
       - 5601:5601
     environment:
-      - KIBANA_SYSTEM_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     networks:
-      - myweb_elk
+      - elk
     depends_on:
       - elasticsearch
     restart: unless-stopped
 
 networks:
-  myweb_elk:
+  elk:
     driver: bridge
 
 volumes:
