@@ -5,13 +5,19 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql
 WORKDIR /var/www/html/
 COPY ./src .
 
+# Create the necessary directories
+RUN mkdir -p /var/www/html/upload
+
+# Set ownership and permissions
 RUN chown -R root:www-data /var/www/html
 RUN chmod 750 /var/www/html
 RUN chmod -R 777 /var/www/html/upload
-RUN find . -type f -exec chmod 640 {} \;
-RUN find . -type d -exec chmod 750 {} \;
+RUN find /var/www/html -type f -exec chmod 640 {} \;
+RUN find /var/www/html -type d -exec chmod 750 {} \;
 
-RUN chmod +t -R /var/www/html/
+# Optionally, you can remove the sticky bit line if not needed
+# RUN chmod +t -R /var/www/html/
+
 # Install ModSecurity
 RUN apt-get update && \
     apt-get install -y libapache2-mod-security2
