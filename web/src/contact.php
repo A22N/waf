@@ -22,43 +22,25 @@ include_once('inc/menu.php')
             <div class="card-body text-center">
                 <h5 class="card-title">ADMIN1</h5>
                 <h6 class="card-subtitle mb-2 text-muted">Nội dung liên hệ</h6>
-                <p class="card-text">Họ và tên: Võ Văn Bảo.
+                <p class="card-text">Họ và tên: Nguyễn Quốc An
                     <br>
                     Đây là ADMIN quản trị các vấn đề liên quan đến server trang web
                     <br>
-                    Các phương thức liên hệ với ADMIN1 nếu server web bị lỗi
+                    Các phương thức liên hệ với ADMIN nếu server web bị lỗi
                 </p>
                 <i class="fa fa-facebook" aria-hidden="true"></i>
                 &nbsp;
                 &nbsp;
-                <a href="https://facebook.com/vovanbao.1808" class="card-link">Võ Văn Bảo</a>
+                <a href="https://www.facebook.com/a229n" class="card-link">Võ Văn Bảo</a>
                 &nbsp;
                 &nbsp;
                 <i class="fa fa-github"></i>
                 &nbsp;
                 &nbsp;
-                <a href="https://github.com/vovanbao1808" class="card-link">Võ Văn Bảo</a>
+                <a href="https://github.com/A22N" class="card-link">Võ Văn Bảo</a>
             </div>
         </div>
         <br>
         <br>
-        <div class="card container">
-            <div class="card-body text-center">
-                <h5 class="card-title">ADMIN2</h5>
-                <h6 class="card-subtitle mb-2 text-muted">Nội dung liên hệ</h6>
-                <p class="card-text">Họ và tên: Nguyễn Ngọc Mai Phương.
-                    <br>
-                    Đây là ADMIN sẽ quản trị các bài viết liên quan đến trang web
-                    <br>
-                    Các phương thức liên hệ với ADMIN2 nếu cần duyệt bài viết
-                </p>
-                <i class="fa fa-facebook" aria-hidden="true"></i>
-                &nbsp;
-                &nbsp;
-                <a href="https://facebook.com/nnmp.pmnn" class="card-link">Nguyễn Ngọc Mai Phương</a>
-                &nbsp;
-                &nbsp;
-            </div>
-        </div>
     </div>
 </body>

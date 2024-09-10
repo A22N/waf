@@ -10,8 +10,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=I@123456@admin
       - MYSQL_DATABASE=PHP_Myblog
-      - MYSQL_USER=db_user
-      - MYSQL_PASSWORD=db_password
+      - MYSQL_USER=hamata
+      - MYSQL_PASSWORD=fCWsqGbUBaBNhf3WO7ru
 
   php_myblog:
     build: ./web
@@ -24,8 +24,8 @@ services:
       - MYSQL_HOSTNAME=db
       - MYSQL_ROOT_PASSWORD=I@123456@admin
       - MYSQL_DATABASE=PHP_Myblog
-      - MYSQL_USER=db_user
-      - MYSQL_PASSWORD=db_password
+      - MYSQL_USER=hamata
+      - MYSQL_PASSWORD=fCWsqGbUBaBNhf3WO7ru
 
   phpmyadmin:
     container_name: phpmyadmin_MyBlog
