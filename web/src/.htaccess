@@ -1,7 +1,22 @@
-1  php_value upload_max_filesize 256M
+# Prevent directory listing
+Options -Indexes
 
-2 php_value post_max_size 256M
+# Allow access to specific file types
+<FilesMatch "\.(html|css|js|png|jpg|jpeg|gif|php)$">
+    Require all granted
+</FilesMatch>
 
-3 php_value max_execution_time 600
+# Custom 403 Forbidden error message
+ErrorDocument 403 "Access Forbidden"
 
-4 php_value max_input_time 600
+# Increase the upload file size limit
+php_value upload_max_filesize 256M
+
+# Increase the post data size limit
+php_value post_max_size 256M
+
+# Increase the maximum execution time
+php_value max_execution_time 600
+
+# Increase the maximum input time
+php_value max_input_time 600
