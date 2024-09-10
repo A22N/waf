@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once('../DB_Config/db_config.php');
+include_once('../DB_Config/connectDB.php');
 if (
     isset($_POST['uname']) &&
     isset($_POST['email'])
