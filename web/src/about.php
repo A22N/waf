@@ -15,6 +15,5 @@ include_once('inc/menu.php')
 
 <body>
     <div class="container">
-        <!-- Trang Web Được Viết Bởi Võ Văn Bảo và Nguyễn Ngọc Mai Phương -->
     </div>
 </body>

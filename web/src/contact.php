@@ -31,13 +31,13 @@ include_once('inc/menu.php')
                 <i class="fa fa-facebook" aria-hidden="true"></i>
                 &nbsp;
                 &nbsp;
-                <a href="https://www.facebook.com/a229n" class="card-link">Võ Văn Bảo</a>
+                <a href="https://www.facebook.com/a229n" class="card-link">Nguyễn Quốc An</a>
                 &nbsp;
                 &nbsp;
                 <i class="fa fa-github"></i>
                 &nbsp;
                 &nbsp;
-                <a href="https://github.com/A22N" class="card-link">Võ Văn Bảo</a>
+                <a href="https://github.com/A22N" class="card-link">A22N</a>
             </div>
         </div>
         <br>
