@@ -6,8 +6,8 @@ if (
     $_GET['ID']
 ) {
     $id = $_GET['ID'];
-    include_once("./func/user.php");
-    include_once("../DB_Config/connectDB.php");
+    include_once("../func/user.php");
+    include_once("../../DB_Config/connectDB.php");
     $name = getUserNameByID($conn, $id);
     $sql1 = "INSERT INTO history(User_ID,User,Event_ID) VALUES (?,?,?)";
     $stmt = $conn->prepare($sql1);
