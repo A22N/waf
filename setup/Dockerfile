@@ -10,10 +10,11 @@ RUN apt-get update && \
     apt-get install -y elasticsearch && \
     apt-get clean
 
-# Sao chép entrypoint.sh vào container
+# Sao chép entrypoint.sh và lib.sh vào container
 COPY entrypoint.sh /entrypoint.sh
+COPY lib.sh /lib.sh
 
-# Đảm bảo entrypoint.sh có quyền thực thi
+# Đảm bảo các tệp có quyền thực thi nếu cần
 RUN chmod +x /entrypoint.sh
 
 # Đặt entrypoint
