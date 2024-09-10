@@ -1,7 +1,7 @@
 <?php
 session_start();
 include_once('inc/menu.php');
-include_once('inc/funcs.php');
+include_once('func/funcs.php');
 if (!isset($_POST['search']) || $_POST['search'] == '') {
     echo "<script>
             window.location.href = 'index.php';
