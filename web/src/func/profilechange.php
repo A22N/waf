@@ -1,7 +1,7 @@
 <?php
 session_start();
 include_once('../DB_Config/connectDB.php');
-include_once('./func/profile.php');
+include_once('../func/profile.php');
 if (
     isset($_SESSION["ID"]) &&
     $_POST['fullname'] &&
