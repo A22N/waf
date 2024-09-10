@@ -10,6 +10,12 @@ WORKDIR /var/www/html/
 # Copy source code
 COPY ./src .
 
+# Cài đặt nano hoặc vim
+RUN apt-get update && apt-get install -y nano
+
+# Thay đổi cấu hình
+RUN echo 'LimitRequestBody 104857600' >> /etc/apache2/apache2.conf
+
 # Set permissions
 RUN mkdir -p /var/www/html/upload && \
     chown -R root:www-data /var/www/html && \
