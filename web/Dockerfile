@@ -15,6 +15,10 @@ RUN mkdir -p /var/www/html/upload && \
     chown -R root:www-data /var/www/html && \
     chmod 750 /var/www/html && \
     chmod -R 777 /var/www/html/upload && \
+    chown www-data:www-data /var/www/html/upload/blog && \
+    chmod 755 /var/www/html/upload/blog && \
+    chown www-data:www-data /var/www/html/upload/user/ && \
+    chmod 755 /var/www/html/upload/user/ && \
     find /var/www/html -type f -exec chmod 640 {} \; && \
     find /var/www/html -type d -exec chmod 750 {} \;
 
@@ -31,6 +35,9 @@ RUN mkdir -p /usr/share/modsecurity-crs && \
     cp -r * /usr/share/modsecurity-crs && \
     cd .. && \
     rm -rf coreruleset
+
+# Install nano
+RUN apt-get install -y nano
 
 # Enable ModSecurity
 RUN a2enmod security2
