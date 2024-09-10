@@ -46,8 +46,11 @@ RUN a2enmod security2
 COPY modsecurity.conf /etc/apache2/mods-enabled/security2.conf
 COPY crs-setup.conf /usr/share/modsecurity-crs/crs-setup.conf
 
-# Xóa quy tắc trùng lặp
-RUN rm -f /usr/share/modsecurity-crs/rules/REQUEST-934-APPLICATION-ATTACK-NODEJS.conf
+# Copy custom rules
+COPY custom_rules.conf /usr/share/modsecurity-crs/rules/custom_rules.conf
+
+# Update ModSecurity to include custom rules
+RUN echo 'Include /usr/share/modsecurity-crs/rules/custom_rules.conf' >> /etc/apache2/mods-enabled/security2.conf
 
 # Expose port 80
 EXPOSE 80
